@@ -1,0 +1,338 @@
+<!-- HTML elements to fill with data later -->
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Work+Sans:300,600);
+
+body{
+	font-size: 20px;
+	font-family: 'Work Sans', sans-serif;
+	color: #333;
+  font-weight: 300;
+  text-align: center;
+  background-color: #fff1ff;
+}
+h1{
+  font-weight: 300;
+  margin: 0px;
+  padding: 10px;
+  font-size: 40px;
+  background-color: #3f1dcb;
+  color: #fff;
+}
+
+.h2{
+  font-weight: 300;
+  margin: 0px;
+  padding: 10px;
+  font-size: 35px;
+}
+
+.question{
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+.answers {
+  font-size: 25px;
+  margin-bottom: 20px;
+  display: inline-block;
+  text-align: left;
+}
+.answers label{
+  display: block;
+  margin-bottom: 10px;
+}
+button{
+  font-family: 'Work Sans', sans-serif;
+	font-size: 22px;
+	background-color: #b47cff;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 20px;
+	cursor: pointer;
+	margin-bottom: 20px;
+	display: inline;
+}
+button:hover{
+	background-color: #e1bee7;
+}
+
+
+.bottom-area{
+  position: absolute;
+  bottom: 0;
+  margin: auto;
+  width: 100%;
+}
+
+
+.slide{
+  font-size: 40px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.active-slide{
+  opacity: 1;
+  z-index: 2;
+}
+.quiz-container{
+  position: relative;
+  height: 200px;
+  margin-top: 40px;
+}
+
+</style>
+
+
+<body>
+<h1>SAT Practice Quiz</h1>
+<div class="quiz-container">
+  <div id="quiz"></div>
+</div>
+<div class="bottom-area">
+<div id="results"></div>
+<button id="previous">Previous Section</button>
+<button id="next">Next Section</button>
+<button id="submit">Submit Quiz</button>
+</div>
+
+
+<script>
+  // filler data to test function
+const quizQuestions = [
+    { section: "Trig",
+      questions: [
+        {
+          question: "Who is the strongest?",
+          answers: {
+            a: "Superman",
+            b: "Terminator",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Who is the best at Fortnite?",
+          answers: {
+            a: "Fortunes",
+            b: "AlienRaindrop",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Who is Waluigi really?",
+          answers: {
+            a: "Mario",
+            b: "Terminator",
+            c: "Obama"
+          },
+          correct: "b"
+        }
+      ]
+    },
+    
+    { section: "Exponents",
+      questions: [
+        {
+          question: "This is a different question?",
+          answers: {
+            a: "Superman",
+            b: "Terminator",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Who is the best at Fortnite?",
+          answers: {
+            a: "Fortunes",
+            b: "AlienRaindrop",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Who is Waluigi not?",
+          answers: {
+            a: "Mario",
+            b: "Terminator",
+            c: "Obama"
+          },
+          correct: "b"
+        }
+      ]
+    },
+    
+    { section: "Fractions",
+      questions: [
+        {
+          question: "I made them all unique, see?",
+          answers: {
+            a: "Superman",
+            b: "Terminator",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Yeah, that was a better question?",
+          answers: {
+            a: "Fortunes",
+            b: "AlienRaindrop",
+            c: "Waluigi"
+          },
+          correct: "c"
+        },
+        
+        {
+          question: "Oh no, did I do it again?",
+          answers: {
+            a: "Mario",
+            b: "Terminator",
+            c: "Obama"
+          },
+          correct: "b"
+        }
+      ]
+    }
+  ];
+  
+  // function to fill the quiz container with our questions
+  function buildQuiz() {
+    // where we'll store HTML output
+    const output = [];
+    
+    // step through all the sections
+    quizQuestions.forEach((currentSection, sectionNumber) => {
+      output.push(`<div class="slide"><div class="h2">${quizQuestions[sectionNumber].section}</div>`);
+      
+      console.log(sectionNumber);
+      const sectionQuestions = quizQuestions[sectionNumber].questions;
+      
+      // step through all the questions
+      sectionQuestions.forEach((currentQuestion, questionNumber) => {
+        // to store HTML output for the answers for this question
+        const answers = [];
+        
+        // step through all the answers
+        for (var letter in currentQuestion.answers) {
+          answers.push(
+            `<label><input type="radio" name="question${questionNumber}" value="${letter}">${letter}: ${currentQuestion.answers[letter]}</label>`
+          );
+        }
+        
+        // add this question and its answers to the output
+        output.push(
+          `<div class="question"> ${currentQuestion.question} </div>
+           <div class="answers"> ${answers.join('')} </div><div class="correction"></div>`
+        );
+      });
+      
+      output.push(`</div>`);
+    });
+    
+    // combine and place our output on the page
+    quizContainer.innerHTML = output.join('');
+  }
+  
+  // function to fill the results container with score
+  function calcResults(){
+    // gather answer containers from our quiz
+    const answerContainers = quizContainer.querySelectorAll('.answers');
+    const correctionContainers = quizContainer.querySelectorAll('.correction');
+  
+    // keep track of user's answers
+    let numCorrect = 0;
+  
+    // for each question...
+    quizQuestions.forEach( (currentQuestion, questionNumber) => {
+  
+      // find selected answer
+      const answerContainer = answerContainers[questionNumber];
+      const correctionContainer = correctionContainers[questionNumber];
+      const selector = 'input[name=question'+questionNumber+']:checked';
+      const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+  
+      // if answer is correct
+      if(userAnswer===currentQuestion.correct){
+        // add to the number of correct answers
+        numCorrect++;
+  
+        // color the answers green
+        answerContainer.style.color = 'lightgreen';
+      }
+      // if answer is wrong or blank
+      else{
+        // color the answers red
+        answerContainer.style.color = 'red';
+        // append the correct answer
+        correctionContainer.innerHTML += `Correct answer: ${quizQuestions[questionNumber].answers[currentQuestion.correct]}`;
+      }
+    });
+  
+    // show number of correct answers out of total
+    resultsContainer.innerHTML = numCorrect + ' out of ' + quizQuestions.length;
+  }
+  
+  function showSlide(n) {
+    slides[currentSlide].classList.remove('active-slide');
+    slides[n].classList.add('active-slide');
+    currentSlide = n;
+    if(currentSlide===0){
+      previousButton.style.display = 'none';
+    }
+    else{
+      previousButton.style.display = 'inline-block';
+    }
+    if(currentSlide===slides.length-1){
+      nextButton.style.display = 'none';
+      submitButton.style.display = 'inline-block';
+    }
+    else{
+      nextButton.style.display = 'inline-block';
+      submitButton.style.display = 'none';
+    }
+  }
+  
+  function showNextSlide() {
+    showSlide(currentSlide + 1);
+  }
+  
+  function showPreviousSlide() {
+    showSlide(currentSlide - 1);
+  }
+    
+  // link elements in HTML doc to variables
+  const quizContainer = document.getElementById('quiz');
+  const resultsContainer = document.getElementById('results');
+  const submitButton = document.getElementById('submit');
+  const loadButton = document.getElementById('load');
+  const previousButton = document.getElementById("previous");
+  const nextButton = document.getElementById("next");
+  let currentSlide = 0;
+  
+  previousButton.addEventListener("click", showPreviousSlide);
+  nextButton.addEventListener("click", showNextSlide);
+  
+  // when you submit a section, calculate the results
+  submitButton.addEventListener('click', calcResults);
+  
+  // build and display the quiz right away
+  buildQuiz();
+  // pagination
+  const slides = document.querySelectorAll(".slide");
+  showSlide(0);
+  
+</script>
+
+</body>
